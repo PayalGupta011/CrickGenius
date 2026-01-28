@@ -23,6 +23,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', 'Segoe UI', sans-serif;
+    overflow-x: "hidden";
 }
 
 body {
@@ -915,4 +916,5 @@ footer {
         width: 100%;
         /* Full width on mobile */
     }
+
 }
