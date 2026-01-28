@@ -100,6 +100,14 @@
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Password validation - minimum 8 characters
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long');
+                return;
+            }
+
             // Simple validation simulation
             if (email) {
                 localStorage.setItem('isLoggedIn', 'true');
@@ -112,7 +120,14 @@
             e.preventDefault();
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
             const photoInput = document.getElementById('signupPhoto');
+
+            // Password validation - minimum 8 characters
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long');
+                return;
+            }
 
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userName', name);
