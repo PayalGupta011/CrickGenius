@@ -1,0 +1,86 @@
+/* Live Score Simulator Styles */
+.ball-by-ball {
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    /* Inner shadow for depth */
+}
+
+/* Custom Scrollbar for Ball-by-Ball */
+.ball-by-ball::-webkit-scrollbar {
+    width: 8px;
+}
+
+.ball-by-ball::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.ball-by-ball::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+.ball-by-ball::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+.ball-event {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+    margin-bottom: 5px;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.ball-event:last-child {
+    margin-bottom: 0;
+}
+
+.ball-event:hover {
+    background: rgba(255, 255, 255, 0.08);
+    /* Hover effect */
+}
+
+.ball-event span {
+    font-weight: 500;
+}
+
+/* Simulator Buttons Centering */
+.simulator-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+    justify-content: center;
+    /* Center active buttons horizontally */
+}
+
+.simulator-controls .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Center text and icon inside button */
+    min-width: 140px;
+    /* Ensure uniform width */
+}
+
+/* Responsive adjustments for Simulator */
+@media (max-width: 600px) {
+    .simulator-controls {
+        flex-direction: column;
+    }
+
+    .simulator-controls .btn {
+        width: 100%;
+        /* Full width on mobile */
+    }
+}

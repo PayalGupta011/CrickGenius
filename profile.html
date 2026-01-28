@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - CrickGenius</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <script>
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <i class="fas fa-cricket"></i>
+                <span>CrickGenius</span>
+            </a>
+
+            <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="merchandise.html">Merchandise</a>
+                <a href="cart.html">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+                <a href="profile.html" class="active">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <a href="#" onclick="logout()">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container" style="padding: 60px 20px;">
+        <div class="glass glass-card animate" style="max-width: 800px; margin: 0 auto;">
+            <div class="profile-header">
+                <img id="profileImg" src="https://via.placeholder.com/100" class="profile-pic" alt="Profile">
+                <div>
+                    <h2 id="userName">User Name</h2>
+                    <p id="userEmail">user@example.com</p>
+                    <label class="btn btn-secondary" style="font-size: 0.8rem; padding: 5px 10px; cursor: pointer;">
+                        Change Photo <input type="file" id="photoUpload" hidden accept="image/*">
+                    </label>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px;">
+                <h3 style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Order History</h3>
+                <div id="orderHistory" style="margin-top: 20px;">
+                    <!-- Orders Loaded Here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Order Modal -->
+    <div class="modal-overlay" id="cancelModal">
+        <div class="modal glass">
+            <h3 style="color: var(--danger); margin-bottom: 20px;">Cancel Order & Refund</h3>
+            <p>Please provide your bank details for the refund.</p>
+            <form id="refundForm" onsubmit="confirmCancel(event)">
+                <div class="input-group">
+                    <input type="text" id="bankName" placeholder="Bank Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="accountNumber" placeholder="Account Number" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="ifscCode" placeholder="IFSC Code" required>
+                </div>
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary w-100" onclick="closeModal()">Close</button>
+                    <button type="submit" class="btn btn-primary w-100"
+                        style="background: var(--danger); border: none;">Confirm Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load User Info
+        const name = localStorage.getItem('userName') || 'CrickGenius User';
+        const email = localStorage.getItem('userEmail') || 'user@example.com';
+        const photo = localStorage.getItem('userPhoto');
+
+        document.getElementById('userName').innerText = name;
+        document.getElementById('userEmail').innerText = email;
+        if (photo) document.getElementById('profileImg').src = photo;
+
+        // Load Orders
+        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const historyContainer = document.getElementById('orderHistory');
+        let currentOrderIndex = null;
+
+        function renderOrders() {
+            historyContainer.innerHTML = '';
+            if (orders.length === 0) {
+                historyContainer.innerHTML = '<p>No orders found.</p>';
+            } else {
+                orders.slice().reverse().forEach((order, index) => {
+                    // Calculate original index because we reversed the array
+                    const originalIndex = orders.length - 1 - index;
+
+                    let itemsHtml = order.items.map(item => `
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px;">
+                            <span>${item.name} (x${item.quantity})</span>
+                            <span>₹${item.price * item.quantity}</span>
+                        </div>
+                    `).join('');
+
+                    const statusHtml = order.status === 'Cancelled'
+                        ? `<span style="color: var(--danger); font-weight: bold;">Cancelled</span>`
+                        : `<button class="btn btn-secondary" style="font-size: 0.8rem; padding: 5px 10px;" onclick="openCancelModal(${originalIndex})">Cancel Order</button>`;
+
+                    const orderHtml = `
+                        <div class="glass glass-card" style="margin-bottom: 15px; padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--accent);">
+                                <strong>Date: ${order.date}</strong>
+                                <strong>Total: ₹${order.total}</strong>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                                ${itemsHtml}
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.9rem; opacity: 0.7;">Status: ${order.status || 'Active'}</span>
+                                ${statusHtml}
+                            </div>
+                        </div>
+                    `;
+                    historyContainer.innerHTML += orderHtml;
+                });
+            }
+        }
+
+        renderOrders();
+
+        // Change Photo
+        document.getElementById('photoUpload').addEventListener('change', function (e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    localStorage.setItem('userPhoto', e.target.result);
+                    document.getElementById('profileImg').src = e.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // Cancel Order Logic
+        function openCancelModal(index) {
+            currentOrderIndex = index;
+            document.getElementById('cancelModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('cancelModal').classList.remove('active');
+            document.getElementById('refundForm').reset();
+        }
+
+        function confirmCancel(e) {
+            e.preventDefault();
+            const bankDetails = {
+                bankName: document.getElementById('bankName').value,
+                accountNumber: document.getElementById('accountNumber').value,
+                ifscCode: document.getElementById('ifscCode').value
+            };
+
+            // Update Order
+            orders[currentOrderIndex].status = 'Cancelled';
+            orders[currentOrderIndex].refundDetails = bankDetails;
+
+            localStorage.setItem('orders', JSON.stringify(orders));
+
+            closeModal();
+            renderOrders();
+            alert('Order cancelled successfully. Refund will be processed to your bank account.');
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'login.html';
+        }
+
+        // Cart Count
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        document.getElementById('cartCount').innerText = cart.reduce((sum, i) => sum + i.quantity, 0);
+    </script>
+</body>
+
+</html>

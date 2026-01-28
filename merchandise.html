@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Merchandise - CrickGenius</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .merch-hero {
+            padding: 80px 0;
+            height: 400px;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            padding: 10px 25px;
+            border: 2px solid var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <i class="fas fa-cricket"></i>
+                <span>CrickGenius</span>
+            </a>
+
+            <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="merchandise.html" class="active">Merchandise</a>
+                <a href="cart.html">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+                <a href="profile.html">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="merch-hero">
+        <h1>Cricket Merchandise Store</h1>
+        <p style="font-size: 1.2rem; margin-top: 10px; max-width: 600px;">Official Jerseys, Bats, Balls, and Accessories
+            from Your Favorite Teams</p>
+    </section>
+
+    <div class="container">
+        <!-- Filters -->
+        <div class="glass glass-card mb-20" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <button class="filter-btn active" data-filter="all">All Products</button>
+            <button class="filter-btn" data-filter="jerseys">Jerseys</button>
+            <button class="filter-btn" data-filter="bats">Bats</button>
+            <button class="filter-btn" data-filter="balls">Balls</button>
+            <button class="filter-btn" data-filter="accessories">Accessories</button>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Loaded via JS -->
+        </div>
+    </div>
+
+    <script>
+        // Sample Product Data
+        const products = [
+            {
+                id: 1,
+                name: "India Cricket Jersey 2026",
+                category: "jerseys",
+                price: 2499,
+                image: "https://cricstudioinc.com/cdn/shop/files/FW24_India_Cricket_T20_International_Jersey_Blue_JN0886_22_model.jpg?v=1743669622&width=713",
+                rating: 4.8
+            },
+            {
+                id: 2,
+                name: "Kookaburra Ghost Pro Bat",
+                category: "bats",
+                price: 15999,
+                image: "https://scssports.in/cdn/shop/files/ChatGPTImageJan17_2026_07_28_49PM.png?v=1768658341&width=980",
+                rating: 4.9
+            },
+            {
+                id: 3,
+                name: "SG Cricket Ball",
+                category: "balls",
+                price: 899,
+                image: "https://distausa.com/cdn/shop/files/41OzCAzi0WL_1024x.jpg?v=1747257770",
+                rating: 4.7
+            },
+            {
+                id: 4,
+                name: "Australia ODI Jersey",
+                category: "jerseys",
+                price: 2799,
+                image: "https://cms-static.asics.com/media-libraries/114234/file.pcp.jpg?1757333376194?20250908121428",
+                rating: 4.6
+            },
+            {
+                id: 5,
+                name: "Cricket Helmet",
+                category: "accessories",
+                price: 3499,
+                image: "https://m.media-amazon.com/images/I/71AidGkVKeL._SL1500_.jpg",
+                rating: 4.8
+            },
+            {
+                id: 6,
+                name: "MRF Genius Grand Edition",
+                category: "bats",
+                price: 18999,
+                image: "https://scssports.in/cdn/shop/files/MRF_Genius_Grand_Cricket_Bat-01.png?v=1765448698&width=980",
+                rating: 4.9
+            },
+            {
+                id: 7,
+                name: "Cricket Gloves",
+                category: "accessories",
+                price: 1999,
+                image: "https://m.media-amazon.com/images/I/715b8x4jgEL._SY879_.jpg",
+                rating: 4.5
+            },
+            {
+                id: 8,
+                name: "England Test Jersey",
+                category: "jerseys",
+                price: 2999,
+                image: "https://www.nextprint.in/cdn/shop/files/1_bd3a564c-674d-4e72-a720-430391a489d1_1066x.png?v=1751622196",
+                rating: 4.7
+            }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function renderProducts(filter = 'all') {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            const filteredProducts = filter === 'all'
+                ? products
+                : products.filter(p => p.category === filter);
+
+            filteredProducts.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'glass glass-card product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" style="width:100%; height:250px; object-fit:cover; border-radius:12px;">
+                    <div style="padding: 15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
+                            <h3 style="font-size:1.1rem; margin:0;">${product.name}</h3>
+                            <span style="color:var(--accent); font-weight:bold;">₹${product.price}</span>
+                        </div>
+                        <div style="color:#ffc107; margin-bottom:15px; font-size:0.9rem;">
+                            ${getStars(product.rating)} <span style="color:rgba(255,255,255,0.6);">(${product.rating})</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="addToCart(${product.id})" style="width:100%;">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function getStars(rating) {
+            const stars = Math.round(rating);
+            let html = '';
+            for (let i = 0; i < 5; i++) {
+                html += i < stars ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+            }
+            return html;
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existingItem = cart.find(item => item.id === id);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+
+            // Visual feedback
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Added';
+            btn.style.background = 'var(--success)';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = ''; // revert to class style
+            }, 1000);
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        // Filter Buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderProducts(btn.dataset.filter);
+            });
+        });
+
+        // Init
+        renderProducts();
+        updateCartCount();
+
+    </script>
+</body>
+
+</html>

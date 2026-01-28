@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CrickGenius</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="glass glass-card auth-box animate">
+            <div class="auth-header">
+                <div class="logo justify-center mb-20" style="justify-content: center;">
+                    <i class="fas fa-cricket"></i>
+                    <span>CrickGenius</span>
+                </div>
+                <h2 id="formTitle">Welcome Back</h2>
+                <p id="formSubtitle">Enter your credentials to access the platform</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">LOG
+                    IN</button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signupForm" class="d-none">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="signupName" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="signupEmail" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="signupPassword" placeholder="Create Password" required>
+                </div>
+                <div class="input-group" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="color: var(--text-secondary); font-size: 0.9rem; margin-left: 5px;">Profile
+                        Picture</label>
+                    <input type="file" id="signupPhoto" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">CREATE
+                    ACCOUNT</button>
+            </form>
+
+            <div class="auth-toggle">
+                <p id="toggleText">Don't have an account? <span id="toggleBtn">Sign Up</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if already logged in
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.href = 'index.html';
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const toggleText = document.getElementById('toggleText');
+        const formTitle = document.getElementById('formTitle');
+        const formSubtitle = document.getElementById('formSubtitle');
+
+        toggleBtn.addEventListener('click', () => {
+            if (loginForm.classList.contains('d-none')) {
+                // Show Login
+                loginForm.classList.remove('d-none');
+                signupForm.classList.add('d-none');
+                formTitle.innerText = "Welcome Back";
+                formSubtitle.innerText = "Enter your credentials to access the platform";
+                toggleText.innerHTML = "Don't have an account? <span id='toggleBtn'>Sign Up</span>";
+            } else {
+                // Show Sign Up
+                loginForm.classList.add('d-none');
+                signupForm.classList.remove('d-none');
+                formTitle.innerText = "Create Account";
+                formSubtitle.innerText = "Join the ultimate cricket analytics community";
+                toggleText.innerHTML = "Already have an account? <span id='toggleBtn'>Log In</span>";
+            }
+            // Re-attach listener since innerHTML replaced the span
+            document.getElementById('toggleBtn').addEventListener('click', arguments.callee);
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            // Simple validation simulation
+            if (email) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                window.location.href = 'index.html';
+            }
+        });
+
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const photoInput = document.getElementById('signupPhoto');
+
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('orders', JSON.stringify([])); // Initialize empty history
+
+            if (photoInput.files && photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    localStorage.setItem('userPhoto', e.target.result);
+                    window.location.href = 'index.html';
+                };
+                reader.readAsDataURL(photoInput.files[0]);
+            } else {
+                // Default placeholder if no photo
+                localStorage.setItem('userPhoto', 'https://via.placeholder.com/100');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+
+</html>
