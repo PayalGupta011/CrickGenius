@@ -23,7 +23,10 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', 'Segoe UI', sans-serif;
-    overflow-x: "hidden";
+}
+
+html {
+    overflow-x: hidden;
 }
 
 body {
@@ -75,6 +78,7 @@ h6 {
 h1 {
     font-size: 3.5rem;
     background: linear-gradient(to right, var(--success), var(--primary));
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -319,6 +323,30 @@ header {
 
 .input-group input[type="file"] {
     padding: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.input-group input[type="file"]::file-selector-button {
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 10px;
+    transition: var(--transition);
+}
+
+.input-group input[type="file"]::file-selector-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4);
+}
+
+.input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 1;
 }
 
 .auth-toggle {
@@ -424,6 +452,10 @@ header {
         text-align: center;
     }
 
+    .hero-text>div {
+        justify-content: center;
+    }
+
     .hero-image {
         margin-top: 40px;
     }
@@ -520,6 +552,7 @@ header {
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: var(--transition);
+    text-align: center;
 }
 
 .feature-card:hover {
@@ -532,6 +565,7 @@ header {
     font-size: 2.5rem;
     margin-bottom: 20px;
     background: linear-gradient(135deg, var(--primary), var(--accent));
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -635,7 +669,7 @@ header {
 /* Footer Grid */
 footer {
     background: #0a0a0a;
-    padding: 60px 0 20px;
+    padding: 60px 20px 20px;
     margin-top: 80px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -916,5 +950,4 @@ footer {
         width: 100%;
         /* Full width on mobile */
     }
-
 }
