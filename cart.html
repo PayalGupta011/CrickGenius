@@ -63,21 +63,21 @@
                 <h2 style="margin-bottom: 20px;">Shipping Details</h2>
                 <form id="shippingForm">
                     <div class="input-group">
-                        <input type="text" placeholder="Full Name" required
+                        <input type="text" id="fullName" placeholder="Full Name" required
                             style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
                     </div>
                     <div class="input-group">
-                        <input type="text" placeholder="Address Line 1" required
+                        <input type="text" id="address" placeholder="Address Line 1" required
                             style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
                     </div>
                     <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <input type="text" placeholder="City" required
+                        <input type="text" id="city" placeholder="City" required
                             style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
-                        <input type="text" placeholder="ZIP Code" required
+                        <input type="text" id="zipCode" placeholder="ZIP Code" required maxlength="6"
                             style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
                     </div>
                     <div class="input-group">
-                        <input type="tel" placeholder="Phone Number" required
+                        <input type="tel" id="phone" placeholder="Phone Number (10 digits)" required maxlength="10"
                             style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
                     </div>
                     <div style="display: flex; justify-content: space-between;">
@@ -105,16 +105,16 @@
                     </label>
                 </div>
 
-                <div id="cardDetails" class="animate">
+                <div id="cardDetails">
                     <h4 style="margin-bottom: 10px; color: var(--accent);">Enter Card Details</h4>
-                    <input type="text" placeholder="Bank Name"
+                    <input type="text" id="bankName" placeholder="Bank Name"
                         style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
-                    <input type="text" placeholder="Card Number"
+                    <input type="text" id="cardNumber" placeholder="Card Number" maxlength="16"
                         style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <input type="text" placeholder="MM/YY"
+                        <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5"
                             style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
-                        <input type="password" placeholder="CVV"
+                        <input type="password" id="cvv" placeholder="CVV" maxlength="3"
                             style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
                     </div>
                 </div>
@@ -239,8 +239,51 @@
         function togglePaymentFields() {
             const method = document.querySelector('input[name="paymentMethod"]:checked').value;
             const cardDetails = document.getElementById('cardDetails');
-            if (method === 'online') cardDetails.classList.remove('d-none');
-            else cardDetails.classList.add('d-none');
+            if (method === 'online') {
+                cardDetails.style.display = 'block';
+            } else {
+                cardDetails.style.display = 'none';
+            }
+        }
+
+        // Input validation for Bank Name (letters only)
+        const bankNameInput = document.getElementById('bankName');
+        if (bankNameInput) {
+            bankNameInput.addEventListener('input', function (e) {
+                // Remove any non-letter characters (including numbers and symbols)
+                this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+            });
+        }
+
+        // Input validation for Card Number (digits only)
+        const cardNumberInput = document.getElementById('cardNumber');
+        if (cardNumberInput) {
+            cardNumberInput.addEventListener('input', function (e) {
+                // Remove any non-digit characters
+                this.value = this.value.replace(/\D/g, '');
+            });
+        }
+
+        // Input validation for CVV (digits only, max 3)
+        const cvvInput = document.getElementById('cvv');
+        if (cvvInput) {
+            cvvInput.addEventListener('input', function (e) {
+                // Remove any non-digit characters
+                this.value = this.value.replace(/\D/g, '');
+            });
+        }
+
+        // Input validation for Expiry Date (format MM/YY)
+        const expiryDateInput = document.getElementById('expiryDate');
+        if (expiryDateInput) {
+            expiryDateInput.addEventListener('input', function (e) {
+                // Remove any non-digit characters except slash
+                let value = this.value.replace(/[^\d]/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                this.value = value;
+            });
         }
 
         function processPayment() {
@@ -266,6 +309,39 @@
                 document.getElementById('paymentView').classList.add('d-none');
                 document.getElementById('successView').classList.remove('d-none');
             }, 2000);
+        }
+
+        // Shipping form input validations
+        const fullNameInput = document.getElementById('fullName');
+        if (fullNameInput) {
+            fullNameInput.addEventListener('input', function (e) {
+                // Only allow letters and spaces
+                this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+            });
+        }
+
+        const cityInput = document.getElementById('city');
+        if (cityInput) {
+            cityInput.addEventListener('input', function (e) {
+                // Only allow letters and spaces
+                this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+            });
+        }
+
+        const zipCodeInput = document.getElementById('zipCode');
+        if (zipCodeInput) {
+            zipCodeInput.addEventListener('input', function (e) {
+                // Only allow digits
+                this.value = this.value.replace(/\D/g, '');
+            });
+        }
+
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function (e) {
+                // Only allow digits, max 10
+                this.value = this.value.replace(/\D/g, '');
+            });
         }
 
         loadCart();
