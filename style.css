@@ -327,6 +327,7 @@ header {
     font-size: 0.9rem;
 }
 
+
 .input-group input[type="file"]::file-selector-button {
     background: linear-gradient(45deg, var(--primary), var(--secondary));
     color: white;
@@ -936,8 +937,16 @@ footer {
 }
 
 .simulator-controls .btn {
-    min-width: 140px;
+    min-width: 140px; 
     /* Ensure uniform width */
+}
+
+#simulationSpeed{
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    color: white;
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+    font-size: 20px;
+    border-radius: 10px;
 }
 
 /* Responsive adjustments for Simulator */
