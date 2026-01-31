@@ -31,6 +31,7 @@
             <nav class="nav-links">
                 <a href="index.html">Home</a>
                 <a href="merchandise.html">Merchandise</a>
+                <a href="booking.html">Tickets</a>
                 <a href="cart.html">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count" id="cartCount">0</span>
@@ -197,6 +198,19 @@
         // Cart Count
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         document.getElementById('cartCount').innerText = cart.reduce((sum, i) => sum + i.quantity, 0);
+
+        // Input Validation
+        document.getElementById('bankName').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+        });
+
+        document.getElementById('ifscCode').addEventListener('input', function (e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        document.getElementById('accountNumber').addEventListener('input', function (e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
     </script>
 </body>
 
