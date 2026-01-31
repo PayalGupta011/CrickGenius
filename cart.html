@@ -31,6 +31,7 @@
             <nav class="nav-links">
                 <a href="index.html">Home</a>
                 <a href="merchandise.html">Merchandise</a>
+                <a href="booking.html">Tickets</a>
                 <a href="cart.html" class="active">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count" id="cartCount">0</span>
@@ -139,6 +140,7 @@
 
     <script>
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let checkoutItems = []; // To store items being checked out (either full cart or single item)
 
         function updateSteps(step) {
             document.getElementById('step1').style.color = step >= 1 ? 'var(--success)' : 'var(--text-secondary)';
@@ -176,7 +178,10 @@
                                 <p style="margin:0; color:var(--success);">₹${item.price}</p>
                             </div>
                         </div>
-                        <div style="display:flex; align-items:center; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap; justify-content:flex-end;">
+                             <button class="btn btn-primary" onclick="buySingleItem(${item.id})" style="padding: 8px 15px; font-size: 0.9rem;">
+                                Buy Now
+                            </button>
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <button class="btn btn-secondary" onclick="updateQty(${item.id}, -1)" style="padding:5px 12px;">-</button>
                                 <span>${item.quantity}</span>
@@ -193,7 +198,7 @@
             html += `
                 <div class="glass glass-card mt-20" style="text-align:right;">
                     <h3>Total: ₹${subtotal}</h3>
-                    <button class="btn btn-primary mt-20" onclick="showShipping()">Proceed to Checkout</button>
+                    <button class="btn btn-primary mt-20" onclick="checkoutAll()">Proceed to Checkout (All)</button>
                 </div>
             `;
 
@@ -214,6 +219,19 @@
             cart = cart.filter(i => i.id !== id);
             localStorage.setItem('cart', JSON.stringify(cart));
             loadCart();
+        }
+
+        function checkoutAll() {
+            checkoutItems = [...cart];
+            showShipping();
+        }
+
+        function buySingleItem(id) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                checkoutItems = [item];
+                showShipping();
+            }
         }
 
         function showShipping() {
@@ -298,13 +316,28 @@
                 const orders = JSON.parse(localStorage.getItem('orders') || '[]');
                 orders.push({
                     date: new Date().toLocaleDateString(),
-                    items: cart,
-                    total: cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+                    items: checkoutItems,
+                    total: checkoutItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
                 });
                 localStorage.setItem('orders', JSON.stringify(orders));
 
-                // Clear Cart
-                localStorage.removeItem('cart');
+                // If verifying all, clear cart. If single item, remove that item from cart (optional, but logical to "buy" it)
+                // The user request is "single product buy". Usually "Buy Now" doesn't necessarily clear the whole cart,
+                // but it should probably remove the bought item from the cart to avoid double buying.
+
+                if (checkoutItems.length === cart.length && checkoutItems.length > 1) {
+                    // Bought everything
+                    localStorage.removeItem('cart');
+                    cart = [];
+                } else {
+                    // Bought single item using "Buy Now"
+                    // Optionally remove it from cart. 
+                    // Let's remove the purchased item(s) from the cart to be safe.
+                    checkoutItems.forEach(cItem => {
+                        cart = cart.filter(i => i.id !== cItem.id);
+                    });
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                }
 
                 document.getElementById('paymentView').classList.add('d-none');
                 document.getElementById('successView').classList.remove('d-none');
